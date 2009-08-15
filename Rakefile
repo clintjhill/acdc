@@ -15,11 +15,11 @@ spec = Gem::Specification.new do |s|
   s.author = "Clint Hill"
   s.email = "clint.hill@h3osoftware.com"
   s.homepage = "http://h3osoftware.com/acdc"
-  s.summary = "AcDc  xml-to-object-to-xml by h3o(software)"
+  s.summary = "AC/DC by h3o(software)"
   s.description = <<-EOF
-    A little library that helps take xml-to-object-to-xml.
+    This is a little xml-to-object-to-xml library that gets dirty jobs done dirt cheap.
   EOF
-  s.rubyforge_project = "siffer"
+  s.rubyforge_project = "acdc"
   s.require_path = "lib"
   s.files        = %w( LICENSE README Rakefile ) + Dir["{spec,lib,doc}/**/*"]
   s.add_dependency "activesupport"
