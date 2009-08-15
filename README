@@ -1,0 +1,13 @@
+= AC/DC - h3o(software)
+
+== For those about to rock
+
+This is a little xml-to-object-to-xml library that takes all the xml out of
+the equation. 
+
+
+== Contact
+
+- Author:: Clint Hill clint.hill@h3osoftware.com
+- Home Page:: http://h3osoftware.com/acdc
+- GitHub:: git://github.com/clinth3o/acdc.git
