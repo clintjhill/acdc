@@ -17,7 +17,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = "http://h3osoftware.com/acdc"
   s.summary = "AC/DC by h3o(software)"
   s.description = <<-EOF
-    This is a little xml-to-object-to-xml library that gets dirty jobs done dirt cheap.
+    This is a little xml-to-object-to-xml library that gets Dirty Deeds Done Dirt Cheap. 
   EOF
   s.rubyforge_project = "acdc"
   s.require_path = "lib"

@@ -1,1 +1,7 @@
 .autotest
+doc/rdoc
+doc/yardoc
+.yardoc
+coverage
+pkg
+.DS_Store

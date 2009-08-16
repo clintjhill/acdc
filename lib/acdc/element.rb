@@ -1,8 +1,14 @@
 module AcDc
+  
+  # Basic XML Element
   class Element
     
     attr_accessor :value, :tag, :attributes, :options
     
+    # Constructor with the following:
+    #@param [Object] value Any value to place in the tags
+    #@option options [Boolean] :single False if object is a collection 
+    #@param [String] tag A tag name to use if not Element
     def initialize(value, options={}, tag=nil)
       @tag = tag ||= self.class.to_s.split("::").last
       @value = value
@@ -10,6 +16,7 @@ module AcDc
       @attributes = options.delete(:attributes)
     end
     
+    # Converts the object to XML
     def acdc
       xml = Builder::XmlMarkup.new
       if value.nil?
@@ -20,14 +27,17 @@ module AcDc
       xml.target!
     end
     
+    # True if object has a collection of values
     def has_many?
       options.has_key?(:single) and !options[:single] and value.size > 1
     end
     
+    # The name to use for the tag
     def tag_name
       tag.to_s.camelize
     end
     
+    # Overridden to compare the values and not the whole object
     def eql?(other)
       return false if other.nil?
       return false unless other.kind_of?(self.class)

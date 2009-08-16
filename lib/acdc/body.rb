@@ -3,6 +3,14 @@ module AcDc
     
     attr_accessor :attributes, :elements
     
+    # Populates the attributes and elements declared for this object.
+    #@option values [Hash] :attributes Hash list of attributes to populate
+    #@example Filling the values and attributes
+    # class ThunderStruck < Body
+    #   attribute :thunder
+    #   element :lightning
+    # end
+    # kaboom = ThunderStruck.new({:attributes => {:thunder => "boom"}, :lightning => "crash"})
     def initialize(values = {})
       @attributes ||= {}
       @elements ||= {}
@@ -37,7 +45,8 @@ module AcDc
         end
       end
     end
-  
+    
+    # Converts object to XML
     def acdc
       xml = Builder::XmlMarkup.new
       attrs = attributes.inject({}){|acc,attr| acc.update(attr[1].to_hash)}
@@ -48,7 +57,8 @@ module AcDc
       }
       xml.target!
     end
-  
+    
+    # The name to use for the tag
     def tag_name
       self.class.to_s.split("::").last
     end
@@ -68,6 +78,10 @@ module AcDc
         child.instance_variable_set('@attributes',@attributes ||= {})
       end
       
+      # Declare an Element for this Body
+      #@param [Symbol] name A name to assign the Element (tag name)
+      #@param [Class] type A type to use for the element (enforcement)
+      #@option options [Boolean] :single False if object is a collection
       def element(*options)
         @elements ||= {}
         name = options.first
@@ -76,19 +90,23 @@ module AcDc
         @elements.update(name => opts.merge(:type => type))
       end
       
+      # Declare an attribute for this Body
       def attribute(name, value = nil)
         @attributes ||= {}
         @attributes.update(name => value)
       end
       
+      # Returns the Hash list of Elements declared
       def declared_elements 
         @elements
       end
       
+      # Returns a Hash list of Attributes declared
       def declared_attributes 
         @attributes
       end
       
+      # Converts the XML to a Class object found in the library
       def acdc(xml)
         doc = Hpricot.XML(xml)
         klass = doc.root.name.constantize

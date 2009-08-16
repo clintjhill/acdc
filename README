@@ -1,9 +1,73 @@
 = AC/DC - h3o(software)
 
-== For those about to rock
+== For Those About To Rock
 
-This is a little xml-to-object-to-xml library that gets dirty jobs done dirt cheap. 
+This is a little XML-to-object-to-XML library that gets Dirty Deeds Done Dirt Cheap. 
 
+== Features
+
+* Take XML string objects and convert them to real Ruby objects from your library
+* Take real Ruby objects and convert them to XML strings
+* Declare XML elements/attributes easily and with type enforcement
+* Coerce objects to XML strings automatically (see JAIL_BREAK)
+
+== Usage
+
+=== Element
+
+A basic XML element is created with the use of the following constructor
+
+  require 'acdc'
+  elem = Element("Hells Bells")
+  puts elem.acdc
+  => "<Element>Hells Bells</Element>"
+  elem = Element("Hells Bells", {}, "BackInBlack")
+  puts elem.acdc
+  => "<BackInBlack>Hells Bells</BackInBlack>"
+
+=== It's A Long Way To The Top, If You Want To Rock n Roll
+
+AcDc::Body assists you with declaring XML objects with ease. And #acdc makes
+marshaling those objects from XML a breeze.
+
+  require 'acdc'
+  class TheJack < AcDc::Body
+    attribute :shes_got, "the jack"
+    element :big_balls
+  end
+  rosie = TheJack.new(:big_balls => "I've got big balls")
+  puts rosie.big_balls
+  => "I've got big balls"
+  puts rosie.acdc
+  => "<TheJack shes_got="the jack"><BigBalls>I've got big balls</BigBalls></TheJack>"
+  who_made_who = acdc("<TheJack><BigBalls>Biggest Balls of them all</BigBalls></TheJack>")
+  puts who_made_who.class
+  => TheJack
+  puts who_made_who.big_balls
+  => "Biggest Balls of them all"
+
+=== JAIL_BREAK
+
+JAIL_BREAK will determine whether or not you need to explicitly coerce your
+objects to XML using Element#acdc or Body#acdc. It's may not be the smartest
+feature in the world, but we're gonna Ride On.
+
+==== Without JAIL_BREAK
+
+  require 'acdc'
+  XML_element = Element("TNT")
+  puts XML_element
+  => #<AcDc::Element:>
+  puts XML_element.acdc
+  => "<Element>TNT</Element>"
+
+==== With JAIL_BREAK
+
+  JAIL_BREAK = true
+  require 'acdc'
+  XML_element = Element("TNT")
+  puts XML_element
+  => "<Element>TNT</Element>"
 
 == Contact
 

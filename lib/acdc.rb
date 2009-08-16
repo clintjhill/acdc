@@ -20,14 +20,17 @@ end
 
 include AcDc
 
+# Will construct a AcDc::Element classs
 def Element(value, options = {}, name = nil)
   Element.new(value,options,name)
 end
 
+# Will construct a AcDc::Attribute class
 def Attribute(name,value)
   Attribute.new(name,value)
 end
 
+# Will convert the XML to a class found in the library
 def acdc(xml)
   Body.acdc(xml)
 end
