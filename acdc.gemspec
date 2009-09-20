@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__),"lib","acdc")
+include AcDc
 Gem::Specification.new do |s|
   s.name = "acdc"
    s.version = AcDc::VERSION
