@@ -1,8 +1,6 @@
-require "lib/acdc"
-include AcDc
 Gem::Specification.new do |s|
   s.name = "acdc"
-   s.version = AcDc::VERSION
+   s.version = "0.1.0"
    s.platform = Gem::Platform::RUBY
    s.author = "Clint Hill"
    s.email = "clint.hill@h3osoftware.com"
