@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__),"lib","acdc")
+require "lib/acdc"
 include AcDc
 Gem::Specification.new do |s|
   s.name = "acdc"
