@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
+include AcDc
 
-describe Body do
+describe AcDc::Body do
   
   class TestType < Element; end
   
