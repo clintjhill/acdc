@@ -9,6 +9,11 @@ describe AcDc::Body do
     attribute :test_attr
     element :test_element, TestType
   end
+  
+  class TestDupe < Body
+    attribute :should_not_have
+    element :should_not_have
+  end
     
   class TestInherit < Test
     attribute :test_inherit_attr
@@ -21,10 +26,20 @@ describe AcDc::Body do
     }.should raise_error
   end
   
+  it "should have separate attributes" do
+    Test.declared_attributes.should_not include(TestDupe.declared_attributes.keys)
+  end
+  
+  it "should have separate elements" do
+    Test.declared_elements.should_not include(TestDupe.declared_elements.keys)
+  end
+  
   it "should have it's own separate element values" do
     first = Test.new(:attributes => {:test_attr => "First Attr"}, :test_element => TestType.new("First"))
     second = Test.new(:attributes => {:test_attr => "Second Attr"}, :test_element => TestType.new("Second"))
     first.acdc.should_not eql(second.acdc)
+    first.test_element.should_not eql(second.test_element)
+    first.test_attr.should_not eql(second.test_attr)
   end
   
   it "should consolidate declared elements when inherited" do

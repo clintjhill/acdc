@@ -74,8 +74,8 @@ module AcDc
 
     class << self
       def inherited(child)
-        child.instance_variable_set('@elements',@elements ||= {})
-        child.instance_variable_set('@attributes',@attributes ||= {})
+        child.instance_variable_set('@declared_elements', @declared_elements)
+        child.instance_variable_set('@declared_attributes', @declared_attributes)
       end
       
       # Declare an Element for this Body
@@ -83,27 +83,27 @@ module AcDc
       #@param [Class] type A type to use for the element (enforcement)
       #@option options [Boolean] :single False if object is a collection
       def element(*options)
-        @elements ||= {}
         name = options.first
         type = options.second || nil
         opts = options.extract_options!
-        @elements.update(name => opts.merge(:type => type))
+        declared_elements.update(name => opts.merge(:type => type))
       end
       
       # Declare an attribute for this Body
       def attribute(name, value = nil)
-        @attributes ||= {}
-        @attributes.update(name => value)
+        declared_attributes.update(name => value)
       end
       
       # Returns the Hash list of Elements declared
       def declared_elements 
-        @elements
+        @elements ||= {}
+        @declared_elements ||= @elements[to_s] ||= {}
       end
       
       # Returns a Hash list of Attributes declared
       def declared_attributes 
-        @attributes
+        @attributes ||= {}
+        @declared_attributes ||= @attributes[to_s] ||= {}
       end
       
       # Converts the XML to a Class object found in the library
@@ -140,6 +140,7 @@ module AcDc
     end
     
     private
+    
       def options_for(key)
         self.class.declared_elements[key]
       end
