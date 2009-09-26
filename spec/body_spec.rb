@@ -1,7 +1,6 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
-include AcDc
 
-describe AcDc::Body do
+describe Body do
   
   class TestType < Element; end
   
@@ -18,6 +17,18 @@ describe AcDc::Body do
   class TestInherit < Test
     attribute :test_inherit_attr
     element :test_inherit_element
+  end
+  
+  class TestSequence < Body
+    element :first
+    element :second
+    element :third
+    element :fourth
+  end
+  
+  class TestSequenceChild < TestSequence
+    element :fifth
+    element :sixth
   end
   
   it "should validate type if provided" do
@@ -77,6 +88,16 @@ describe AcDc::Body do
     test.test_element[0].should eql(TestType.new(Element("Element_Test1")))
     test.test_element[1].should be_instance_of(TestType)
     test.test_element[1].should eql(TestType.new("Element_Test2"))
+  end
+  
+  it "should maintain sequence based on element introduction" do
+    sequence = TestSequence.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth")
+    sequence.acdc.should match(/<first>[\w\s]+\S+<second>[\w\s]+\S+<third>[\w\s]+\S+<fourth>/)
+  end
+  
+  it "should maintain sequence after inheritance" do
+    seq_child = TestSequenceChild.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth", :fifth => "Fifth", :sixth => "Sixth")
+    seq_child.acdc.should match(/<first>[\w\s]+\S+<second>[\w\s]+\S+<third>[\w\s]+\S+<fourth>[\w\s]+\S+<fifth>[\w\s]+\S+<sixth>/)
   end
   
 end

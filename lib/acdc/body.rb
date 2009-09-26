@@ -38,9 +38,9 @@ module AcDc
             else
               raise ArgumentError.new("Type is invalid") unless val.is_a?(type)
             end
-            elements.update(key => type.new(val,options_for(key),key))
+            elements.update(key => type.new(val, options_for(key)))
           else
-            elements.update(key => Element(val,options_for(key),key))
+            elements.update(key => Element(val, options_for(key)))
           end
         end
       end
@@ -51,7 +51,7 @@ module AcDc
       xml = Builder::XmlMarkup.new
       attrs = attributes.inject({}){|acc,attr| acc.update(attr[1].to_hash)}
       xml.tag!(tag_name,attrs){ |body|
-        elements.each do |key, elem|
+        elements.sort{|a,b| a[1].sequence <=> b[1].sequence}.each do |key, elem|
           body << elem.acdc
         end
       }
@@ -76,17 +76,22 @@ module AcDc
       def inherited(child)
         child.instance_variable_set('@declared_elements', @declared_elements)
         child.instance_variable_set('@declared_attributes', @declared_attributes)
+        child.instance_variable_set('@element_sequence', @element_sequence)
       end
       
       # Declare an Element for this Body
+      # Sequence of elements (XML Schema sequence) is taken care of by the order
+      # the elements are declared in the class definition.
       #@param [Symbol] name A name to assign the Element (tag name)
       #@param [Class] type A type to use for the element (enforcement)
       #@option options [Boolean] :single False if object is a collection
+      #@option options [String] :tag String determining the name to use in the XML tag
       def element(*options)
         name = options.first
-        type = options.second || nil
+        type = options.second || nil unless options.second.is_a?(Hash)
         opts = options.extract_options!
-        declared_elements.update(name => opts.merge(:type => type))
+        opts.merge!(:tag => name) if opts[:tag].nil?
+        declared_elements.update(name => opts.merge(:type => type, :sequence => next_sequence))
       end
       
       # Declare an attribute for this Body
@@ -137,6 +142,11 @@ module AcDc
           klass = name.constantize
           klass.new(value_from_node(node), :attributes => attrs)
         end
+        
+        def next_sequence
+          @element_sequence ||= 0
+          @element_sequence = @element_sequence +=1
+        end
     end
     
     private
@@ -156,7 +166,7 @@ module AcDc
       def write(method_id, *args, &block)
         key = method_id.to_s.gsub(/\=$/,"").to_sym
         if elements.has_key?(key)
-          elements.update(key => Element(args.first,options_for(key),key))
+          elements.update(key => Element(args.first, options_for(key)))
         else
           attributes.update(key => Attribute(key,args.first))
         end

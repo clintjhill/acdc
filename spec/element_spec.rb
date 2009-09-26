@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
-include AcDc
 
 describe Element do
   
@@ -31,6 +30,11 @@ describe Element do
     email.acdc.should eql(email_xml)
   end
   
+  it "should render XML with proper tag" do
+    test = Email.new("test", :tag => "email1")
+    test.acdc.should match(/<email1>.+<\/email1>/)
+  end
+  
   it "should render nested Element XML" do
     contact.acdc.should eql(contact_xml)
   end
@@ -44,7 +48,7 @@ describe Element do
     email1 = Email.new("some_email1")
     email2 = Email.new("some_email2")
     many = Element([email1,email2],{:single => false})
-    many.acdc.should match(/<Element>(<Email>[\w\s\d]*<\/Email>){2}<\/Element>/)
+    many.acdc.should match(/<Element>(<Email>.*<\/Email>){2}<\/Element>/)
   end
   
   it "should compare content when using eql?" do

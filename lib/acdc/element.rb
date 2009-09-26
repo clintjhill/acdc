@@ -8,9 +8,9 @@ module AcDc
     # Constructor with the following:
     #@param [Object] value Any value to place in the tags
     #@option options [Boolean] :single False if object is a collection 
-    #@param [String] tag A tag name to use if not Element
-    def initialize(value, options={}, tag=nil)
-      @tag = tag ||= self.class.to_s.split("::").last
+    #@option options [String] :tag A tag name to use if not Element
+    def initialize(value, options={})
+      @tag = options[:tag] ||= self.class.to_s.split("::").last
       @value = value
       @options = options
       @attributes = options.delete(:attributes)
@@ -33,8 +33,8 @@ module AcDc
     end
     
     # The name to use for the tag
-    def tag_name
-      tag.to_s.camelize
+    def tag_name 
+      tag.to_s
     end
     
     # Overridden to compare the values and not the whole object
@@ -42,6 +42,10 @@ module AcDc
       return false if other.nil?
       return false unless other.kind_of?(self.class)
       value.eql?(other.value)
+    end
+    
+    def sequence
+      @options[:sequence]
     end
     
     private

@@ -9,7 +9,7 @@ require File.join(File.dirname(__FILE__),"acdc","body")
 
 module AcDc
   
-  VERSION = [0,1,4] unless defined?(AcDc::VERSION)
+  VERSION = [0,1,5] unless defined?(AcDc::VERSION)
   
   if defined?(JAIL_BREAK)
     Element.class_eval{ alias :to_s :acdc }
@@ -19,8 +19,8 @@ module AcDc
 end
 
 # Will construct a AcDc::Element classs
-def Element(value, options = {}, name = nil)
-  AcDc::Element.new(value,options,name)
+def Element(value, options = {})
+  AcDc::Element.new(value,options)
 end
 
 # Will construct a AcDc::Attribute class
