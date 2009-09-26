@@ -5,6 +5,10 @@ describe Element do
   class Email < Element; end
   class Contact < Element; end
 
+  class Contained < Body
+    element :contained_value
+  end
+  
   email = Email.new("clint_hill@msn.com")
   contact = Contact.new(email)
   
@@ -37,6 +41,16 @@ describe Element do
   
   it "should render nested Element XML" do
     contact.acdc.should eql(contact_xml)
+  end
+  
+  it "should assure XML renders regardless of containing class type" do
+    email = Email.new(Contained.new(:contained_value => "Testing"))
+    email.acdc.should match(/<contained_value>/)
+  end
+  
+  it "should render empty XML tag if no value" do
+    email = Email.new(nil)
+    email.acdc.should match(/Email\/>/)
   end
   
   it "should raise exception to multiple non-elements" do

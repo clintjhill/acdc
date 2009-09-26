@@ -9,7 +9,7 @@ module AcDc
     #@param [Object] value Any value to place in the tags
     #@option options [Boolean] :single False if object is a collection 
     #@option options [String] :tag A tag name to use if not Element
-    def initialize(value, options={})
+    def initialize(value=nil, options={})
       @tag = options[:tag] ||= self.class.to_s.split("::").last
       @value = value
       @options = options
@@ -57,7 +57,7 @@ module AcDc
         if has_many?
           value.inject(""){|xml,val| xml << (val.is_a?(Element) ? val.acdc : val.to_s)}
         else
-          value.is_a?(Element) ? value.acdc : value.to_s
+          value.respond_to?(:acdc) ? value.acdc : value.to_s
         end
       end
       
