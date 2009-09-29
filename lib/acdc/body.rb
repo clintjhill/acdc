@@ -58,6 +58,11 @@ module AcDc
       xml.target!
     end
     
+    # Calls #acdc then matches
+    def match(pattern)
+      acdc.match(pattern)
+    end
+    
     # The name to use for the tag
     def tag_name
       self.class.to_s.split("::").last

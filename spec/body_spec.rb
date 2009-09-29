@@ -90,6 +90,12 @@ describe Body do
     test.test_element[1].should eql(TestType.new("Element_Test2"))
   end
   
+  it "should provide coercion for match calls" do
+    test = Test.new(:test_element => TestType.new("What?"))
+    test.should respond_to(:match)
+    test.match(/What?/).should be_true
+  end
+  
   it "should maintain sequence based on element introduction" do
     sequence = TestSequence.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth")
     sequence.acdc.should match(/<first>[\w\s]+\S+<second>[\w\s]+\S+<third>[\w\s]+\S+<fourth>/)

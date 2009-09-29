@@ -21,10 +21,33 @@ spec = Gem::Specification.new do |s|
   EOF
   s.rubyforge_project = "acdc"
   s.require_path = "lib"
-  s.files        = %w( LICENSE README Rakefile ) + Dir["{spec,lib,doc}/**/*"]
-  s.add_dependency "activesupport"
-  s.add_dependency "builder"
-  s.add_dependency "hpricot"
+  s.files = [
+     "LICENSE",
+     "README",
+     "Rakefile",
+     "lib/acdc.rb",
+     "lib/acdc/attribute.rb",
+     "lib/acdc/body.rb",
+     "lib/acdc/element.rb"
+  ]
+  if s.respond_to? :specification_version then
+    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
+    s.specification_version = 3
+
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<activesupport>, [">= 2.3.2"])
+      s.add_runtime_dependency(%q<builder>, [">= 2.1.2"])
+      s.add_runtime_dependency(%q<hpricot>, [">= 0.8"])
+    else
+      s.add_dependency(%q<activesupport>, [">= 2.3.2"])
+      s.add_dependency(%q<builder>, [">= 2.1.2"])
+      s.add_dependency(%q<hpricot>, [">= 0.8"])
+    end
+  else
+    s.add_dependency(%q<activesupport>, [">= 2.3.2"])
+    s.add_dependency(%q<builder>, [">= 2.1.2"])
+    s.add_dependency(%q<hpricot>, [">= 0.8"])
+  end
 end
 
 Rake::GemPackageTask.new(spec) do |package|

@@ -77,4 +77,10 @@ describe Element do
     email1.should eql(email2)
   end
   
+  it "should provide coercion for match calls" do
+    test = Element("What?")
+    test.should respond_to(:match)
+    test.match(/What?/).should be_true
+  end
+  
 end

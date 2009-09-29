@@ -27,6 +27,11 @@ module AcDc
       xml.target!
     end
     
+    # Calls #acdc then matches
+    def match(pattern)
+      acdc.match(pattern)
+    end
+    
     # True if object has a collection of values
     def has_many?
       options.has_key?(:single) and !options[:single] and value.size > 1
