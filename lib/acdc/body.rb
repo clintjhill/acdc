@@ -38,7 +38,8 @@ module AcDc
             else
               raise ArgumentError.new("Type is invalid") unless val.is_a?(type)
             end
-            elements.update(key => type.new(val, options_for(key)))
+            elements.update(key => type.new(key => val)) if type.ancestors.include?(Body)
+            elements.update(key => type.new(val, options_for(key))) if type.ancestors.include?(Element)
           else
             elements.update(key => Element(val, options_for(key)))
           end

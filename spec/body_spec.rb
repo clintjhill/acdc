@@ -31,6 +31,10 @@ describe Body do
     element :sixth
   end
   
+  class TestBody < Body
+    element :test_body, Test
+  end
+  
   it "should validate type if provided" do
     lambda {
       Test.new(:test_element => "Junk")
@@ -104,6 +108,14 @@ describe Body do
   it "should maintain sequence after inheritance" do
     seq_child = TestSequenceChild.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth", :fifth => "Fifth", :sixth => "Sixth")
     seq_child.acdc.should match(/<first>[\w\s]+\S+<second>[\w\s]+\S+<third>[\w\s]+\S+<fourth>[\w\s]+\S+<fifth>[\w\s]+\S+<sixth>/)
+  end
+  
+  it "should initialize elements other than Element type" do
+    lambda{
+      body = TestBody.new(
+        :test_body => Test.new(
+                          :test_element => TestType.new("Tester")
+                              ))}.should_not raise_error
   end
   
 end

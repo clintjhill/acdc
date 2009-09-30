@@ -9,7 +9,7 @@ require File.join(File.dirname(__FILE__),"acdc","body")
 
 module AcDc
   
-  VERSION = [0,2,1] unless defined?(AcDc::VERSION)
+  VERSION = [0,2,2] unless defined?(AcDc::VERSION)
   
   if defined?(JAIL_BREAK)
     Element.class_eval{ alias :to_s :acdc }

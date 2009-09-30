@@ -10,7 +10,7 @@ include AcDc
 
 spec = Gem::Specification.new do |s|
   s.name = "acdc"
-  s.version = AcDc::VERSION
+  s.version = AcDc::VERSION.join(".")
   s.platform = Gem::Platform::RUBY
   s.author = "Clint Hill"
   s.email = "clint.hill@h3osoftware.com"
