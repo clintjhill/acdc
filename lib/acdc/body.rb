@@ -1,7 +1,7 @@
 module AcDc
   class Body 
     
-    attr_accessor :attributes, :elements
+    attr_accessor :attributes, :elements, :sequence
     
     # Populates the attributes and elements declared for this object.
     #@option values [Hash] :attributes Hash list of attributes to populate
@@ -14,6 +14,7 @@ module AcDc
     def initialize(values = {})
       @attributes ||= {}
       @elements ||= {}
+      @sequence = values[:sequence] || 0
       # catch default values for attributes
       unless self.class.declared_attributes.values.all?{|val| val.nil?}
         self.class.declared_attributes.each do |key,val|
@@ -32,14 +33,11 @@ module AcDc
       values.each do |key,val|
         if self.class.declared_elements.has_key?(key)
           type = options_for(key)[:type]
-          if type
-            if val.respond_to?(:each)
-              val.each {|v| raise ArgumentError.new("Type is invalid") unless v.is_a?(type)}
-            else
-              raise ArgumentError.new("Type is invalid") unless val.is_a?(type)
-            end
-            elements.update(key => type.new(key => val)) if type.ancestors.include?(Body)
-            elements.update(key => type.new(val, options_for(key))) if type.ancestors.include?(Element)
+          validate(type,key,val)
+          if type and type.ancestors.include?(Body)
+            elements.update(key => type.new(val.to_hash.merge(:sequence => options_for(key)[:sequence]))) 
+          elsif type
+            elements.update(key => type.new(val, options_for(key)))
           else
             elements.update(key => Element(val, options_for(key)))
           end
@@ -62,6 +60,10 @@ module AcDc
     # Calls #acdc then matches
     def match(pattern)
       acdc.match(pattern)
+    end
+    
+    def to_hash
+      elements
     end
     
     # The name to use for the tag
@@ -89,7 +91,7 @@ module AcDc
       # Sequence of elements (XML Schema sequence) is taken care of by the order
       # the elements are declared in the class definition.
       #@param [Symbol] name A name to assign the Element (tag name)
-      #@param [Class] type A type to use for the element (enforcement)
+      #@param [Class] type A type to use for the element (use this for type enforcement)
       #@option options [Boolean] :single False if object is a collection
       #@option options [String] :tag String determining the name to use in the XML tag
       def element(*options)
@@ -157,13 +159,30 @@ module AcDc
     
     private
     
+      def validate(type, key, val)
+        if type
+          if val.respond_to?(:each)
+            val.each {|v| raise ArgumentError.new("#{val.class} type is invalid. #{self.class} #{key} requires #{type}.") unless v.is_a?(type)}
+          else
+             unless val.is_a?(type)
+                raise ArgumentError.new("#{val.class} type is invalid. #{self.class} #{key} requires #{type}.")
+              end
+          end
+        end
+      end
+      
       def options_for(key)
         self.class.declared_elements[key]
       end
       
       def read(method_id)
         if elements.has_key?(method_id)
-          elements[method_id].value
+          obj = elements[method_id]
+          if obj.is_a?(Body)
+            elements[method_id]
+          else
+            elements[method_id].value
+          end
         else
           attributes[method_id].value
         end
@@ -172,7 +191,14 @@ module AcDc
       def write(method_id, *args, &block)
         key = method_id.to_s.gsub(/\=$/,"").to_sym
         if elements.has_key?(key)
-          elements.update(key => Element(args.first, options_for(key)))
+          type = options_for(key)[:type]
+          if type and type.ancestors.include?(Body)
+            elements.update(key => type.new(args.first.to_hash, options_for(key)))
+          elsif type
+            elements.update(key => type.new(args.first, options_for(key)))
+          else
+            elements.update(key => Element(args.first, options_for(key)))
+          end
         else
           attributes.update(key => Attribute(key,args.first))
         end

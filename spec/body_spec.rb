@@ -27,7 +27,7 @@ describe Body do
   end
   
   class TestSequenceChild < TestSequence
-    element :fifth
+    element :fifth, Test
     element :sixth
   end
   
@@ -102,20 +102,27 @@ describe Body do
   
   it "should maintain sequence based on element introduction" do
     sequence = TestSequence.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth")
-    sequence.acdc.should match(/<first>[\w\s]+\S+<second>[\w\s]+\S+<third>[\w\s]+\S+<fourth>/)
+    sequence.acdc.should match(/<first>.+<second>.+<third>.+<fourth>/)
   end
   
   it "should maintain sequence after inheritance" do
-    seq_child = TestSequenceChild.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth", :fifth => "Fifth", :sixth => "Sixth")
-    seq_child.acdc.should match(/<first>[\w\s]+\S+<second>[\w\s]+\S+<third>[\w\s]+\S+<fourth>[\w\s]+\S+<fifth>[\w\s]+\S+<sixth>/)
+    t = Test.new(:test_element => TestType.new("Fifth"))
+    seq_child = TestSequenceChild.new(:first => "First", 
+                    :second => "Second", 
+                    :third => "Third", 
+                    :fourth => "Fourth", 
+                    :fifth => t, 
+                    :sixth => "Sixth")
+    seq_child.fifth.should be_instance_of(Test)
+    seq_child.should match(/<first>.+<second>.+<third>.+<fourth>.+<Test><test_element>.+<sixth>/)
   end
   
   it "should initialize elements other than Element type" do
-    lambda{
-      body = TestBody.new(
-        :test_body => Test.new(
-                          :test_element => TestType.new("Tester")
-                              ))}.should_not raise_error
-  end
-  
+     lambda{
+       body = TestBody.new(
+         :test_body => Test.new(
+                           :test_element => TestType.new("Tester")
+                               ))}.should_not raise_error
+   end
+    
 end
