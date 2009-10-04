@@ -37,7 +37,9 @@ module AcDc
           if type and type.ancestors.include?(Body)
             elements.update(key => type.new(val.to_hash.merge(:sequence => options_for(key)[:sequence]))) 
           elsif type
-            elements.update(key => type.new(val, options_for(key)))
+            # if it's an Element we want the value (avoids recursive value)
+            value = (val.respond_to?(:value)) ? val.value : val
+            elements.update(key => type.new(value, options_for(key)))
           else
             elements.update(key => Element(val, options_for(key)))
           end
@@ -177,12 +179,7 @@ module AcDc
       
       def read(method_id)
         if elements.has_key?(method_id)
-          obj = elements[method_id]
-          if obj.is_a?(Body)
-            elements[method_id]
-          else
-            elements[method_id].value
-          end
+          elements[method_id]
         else
           attributes[method_id].value
         end

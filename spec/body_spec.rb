@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),"spec_helper")
 
 describe Body do
   
-  class TestType < Element; end
+  class TestType < Element;  end
   
   class Test < Body
     attribute :test_attr
@@ -72,57 +72,65 @@ describe Body do
     test.test_element.should eql(TestType.new("Test Elem"))
     changed = Element("Changed")
     test.test_element = changed
-    test.test_element.should eql(changed)
+    test.test_element.value.should eql(changed)
     test.test_element = "Changed Again"
-    test.test_element.should eql("Changed Again")
+    test.test_element.value.should eql("Changed Again")
   end
   
-  it "should read the value of each declared attribute" do
-    test = Test.new(:attributes => {:test_attr => "Test Attr"}, :test_element => TestType.new("Test Elem"))
-    test.test_attr.should eql("Test Attr")
-  end
-  
-  it "should parse and hydrate from xml" do
-    xml = "<Test test_attr=\"Attribute_Test\"><TestElement><TestType><Element>Element_Test1</Element></TestType><TestType>Element_Test2</TestType></TestElement></Test>"
-    test = acdc(xml)
-    test.should be_instance_of(Test)
-    test.test_attr.should eql("Attribute_Test")
-    test.test_element.should have(2).items
-    test.test_element[0].should be_instance_of(TestType)
-    test.test_element[0].should eql(TestType.new(Element("Element_Test1")))
-    test.test_element[1].should be_instance_of(TestType)
-    test.test_element[1].should eql(TestType.new("Element_Test2"))
-  end
-  
-  it "should provide coercion for match calls" do
-    test = Test.new(:test_element => TestType.new("What?"))
-    test.should respond_to(:match)
-    test.match(/What?/).should be_true
-  end
-  
-  it "should maintain sequence based on element introduction" do
-    sequence = TestSequence.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth")
-    sequence.acdc.should match(/<first>.+<second>.+<third>.+<fourth>/)
-  end
-  
-  it "should maintain sequence after inheritance" do
+  it "should read values of mixed heirarchy" do
     t = Test.new(:test_element => TestType.new("Fifth"))
-    seq_child = TestSequenceChild.new(:first => "First", 
-                    :second => "Second", 
-                    :third => "Third", 
-                    :fourth => "Fourth", 
-                    :fifth => t, 
-                    :sixth => "Sixth")
-    seq_child.fifth.should be_instance_of(Test)
-    seq_child.should match(/<first>.+<second>.+<third>.+<fourth>.+<Test><test_element>.+<sixth>/)
+    child = TestBody.new(:test_body => t)
+    child.test_body.should be_instance_of(Test)
+    child.test_body.test_element.should be_instance_of(TestType)
+    child.test_body.test_element.should eql(TestType.new("Fifth"))
+    child.test_body.test_element.value.should be_instance_of(String)
   end
-  
-  it "should initialize elements other than Element type" do
-     lambda{
-       body = TestBody.new(
-         :test_body => Test.new(
-                           :test_element => TestType.new("Tester")
-                               ))}.should_not raise_error
-   end
     
+   it "should read the value of each declared attribute" do
+     test = Test.new(:attributes => {:test_attr => "Test Attr"}, :test_element => TestType.new("Test Elem"))
+     test.test_attr.should eql("Test Attr")
+   end
+   
+   it "should parse and hydrate from xml" do
+     xml = "<Test test_attr=\"Attribute_Test\"><TestElement><TestType><Element>Element_Test1</Element></TestType><TestType>Element_Test2</TestType></TestElement></Test>"
+     test = acdc(xml)
+     test.should be_instance_of(Test)
+     test.test_attr.should eql("Attribute_Test")
+     test.test_element.value.should have(2).items
+     test.test_element.value[0].should be_instance_of(TestType)
+     test.test_element.value[0].should eql(TestType.new(Element("Element_Test1")))
+     test.test_element.value[1].should be_instance_of(TestType)
+     test.test_element.value[1].should eql(TestType.new("Element_Test2"))
+   end
+   
+   it "should provide coercion for match calls" do
+     test = Test.new(:test_element => TestType.new("What?"))
+     test.should respond_to(:match)
+     test.match(/What?/).should be_true
+   end
+   
+   it "should maintain sequence based on element introduction" do
+     sequence = TestSequence.new(:first => "First", :second => "Second", :third => "Third", :fourth => "Fourth")
+     sequence.acdc.should match(/<first>.+<second>.+<third>.+<fourth>/)
+   end
+   
+   it "should maintain sequence after inheritance" do
+     t = Test.new(:test_element => TestType.new("Fifth"))
+     seq_child = TestSequenceChild.new(:first => "First", 
+                     :second => "Second", 
+                     :third => "Third", 
+                     :fourth => "Fourth", 
+                     :fifth => t, 
+                     :sixth => "Sixth")
+     seq_child.should match(/<first>.+<second>.+<third>.+<fourth>.+<Test><test_element>.+<sixth>/)
+   end
+   
+   it "should initialize elements other than Element type" do
+      lambda{
+        body = TestBody.new(
+          :test_body => Test.new(
+                            :test_element => TestType.new("Tester")
+                                ))}.should_not raise_error
+    end
+     
 end
