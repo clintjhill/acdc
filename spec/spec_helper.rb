@@ -1,3 +1,6 @@
 require File.join(File.dirname(__FILE__),"..", "lib","acdc")
 require 'spec'
-include AcDc
+
+def xml_file(filename)
+  File.read(File.dirname(__FILE__) + "/xml/#{filename}")
+end

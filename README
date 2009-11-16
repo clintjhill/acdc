@@ -9,21 +9,8 @@ This is a little XML-to-object-to-XML library that gets Dirty Deeds Done Dirt Ch
 * Take XML string objects and convert them to real Ruby objects from your library
 * Take real Ruby objects and convert them to XML strings
 * Declare XML elements/attributes easily and with type enforcement
-* Coerce objects to XML strings automatically (see JAIL_BREAK)
 
 == Usage
-
-=== Element
-
-A basic XML element is created with the use of the following constructor
-
-  require 'acdc'
-  elem = Element("Hells Bells")
-  puts elem.acdc
-  => "<Element>Hells Bells</Element>"
-  elem = Element("Hells Bells", {}, "BackInBlack")
-  puts elem.acdc
-  => "<BackInBlack>Hells Bells</BackInBlack>"
 
 === It's A Long Way To The Top, If You Want To Rock n Roll
 
@@ -32,45 +19,30 @@ marshaling those objects from XML a breeze.
 
   require 'acdc'
   class TheJack < AcDc::Body
-    attribute :shes_got, "the jack"
-    element :big_balls
+    attribute :shes_got, String
+    element :big_balls, String
   end
-  rosie = TheJack.new(:big_balls => "I've got big balls")
-  puts rosie.big_balls
+
+  jack = acdc("<thejack shes_got='big-balls'><big_balls>I've got big balls</big_balls></thejack>")
+  puts jack.shes_got
+  => "big_balls"
+  puts jack.big_balls
   => "I've got big balls"
-  puts rosie.acdc
-  => "<TheJack shes_got="the jack"><BigBalls>I've got big balls</BigBalls></TheJack>"
-  who_made_who = acdc("<TheJack><BigBalls>Biggest Balls of them all</BigBalls></TheJack>")
-  puts who_made_who.class
-  => TheJack
-  puts who_made_who.big_balls
-  => "Biggest Balls of them all"
-
-=== JAIL_BREAK
-
-JAIL_BREAK will determine whether or not you need to explicitly coerce your
-objects to XML using Element#acdc or Body#acdc. It's may not be the smartest
-feature in the world, but we're gonna Ride On.
-
-==== Without JAIL_BREAK
-
-  require 'acdc'
-  XML_element = Element("TNT")
-  puts XML_element
-  => #<AcDc::Element:>
-  puts XML_element.acdc
-  => "<Element>TNT</Element>"
-
-==== With JAIL_BREAK
-
-  JAIL_BREAK = true
-  require 'acdc'
-  XML_element = Element("TNT")
-  puts XML_element
-  => "<Element>TNT</Element>"
+  puts jack.acdc
+  => "<?xml version='1.0' encoding='UTF-8'?><thejack shes_got='big-balls'><big_balls>I've got big balls</big_balls></thejack>"
 
 == Contact
 
 - Author:: Clint Hill clint.hill@h3osoftware.com
 - Home Page:: http://h3osoftware.com/acdc
 - GitHub:: git://github.com/clinth3o/acdc.git
+
+== Special Thanks
+
+I want to thank John Nunemaker for his HappyMapper gem. I stole quite a bit
+of code from that gem.
+http://railstips.org/2008/11/17/happymapper-making-xml-fun-again
+http://github.com/jnunemaker/happymapper/
+
+And if you might ask why not just use his library? Well - that's the acdc part
+of this story. He had the AC - I added the DC.
