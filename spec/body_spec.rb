@@ -35,6 +35,14 @@ describe Body do
     element :test_body, Test
   end
   
+  it "should parse recursive Body xml" do
+    test = Test.new(:test_element => TestType.new("Test Type"))
+    tsq = TestSequenceChild.new(:first => "First", :fifth => test)
+    parsed = Body.acdc(tsq.acdc)
+    parsed.should be_instance_of(TestSequenceChild)
+    parsed.fifth.should be_instance_of(Test)
+  end
+  
   it "should validate type if provided" do
     lambda {
       Test.new(:test_element => "Junk")
@@ -60,11 +68,13 @@ describe Body do
   it "should consolidate declared elements when inherited" do
     TestInherit.should have(2).declared_elements
     TestInherit.declared_elements.should include(:test_element)
+    Test.declared_elements.should_not include(:test_inherit_element)
   end
   
   it "should consolidate declared attributes when inherited" do
     TestInherit.should have(2).declared_attributes
     TestInherit.declared_attributes.should include(:test_attr)
+    Test.declared_attributes.should_not include(:test_inherit_attr)
   end
   
   it "should write/read the value of nested declared elements" do
@@ -132,5 +142,10 @@ describe Body do
                             :test_element => TestType.new("Tester")
                                 ))}.should_not raise_error
     end
-     
+    
+    it "should render empty xml tags for nil sub element types if they are nil" do
+      subbed = Test.new(:test_element => TestType.new)
+      subbed.acdc.match(/<Test><test_element><TestType\/>/)
+    end
+      
 end

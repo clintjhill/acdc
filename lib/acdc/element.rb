@@ -9,6 +9,7 @@ module AcDc
     #@param [Object] value Any value to place in the tags
     #@option options [Boolean] :single False if object is a collection 
     #@option options [String] :tag A tag name to use if not Element
+    #@option options [Integer] :sequence A number representing the order of this element
     def initialize(value=nil, options={})
       @tag = options[:tag] ||= self.class.to_s.split("::").last
       @value = value

@@ -32,16 +32,13 @@ module AcDc
       # and finally set values
       values.each do |key,val|
         if self.class.declared_elements.has_key?(key)
-          type = options_for(key)[:type]
+          type = options_for(key)[:type] || Element
           validate(type,key,val)
           if type and type.ancestors.include?(Body)
             elements.update(key => type.new(val.to_hash.merge(:sequence => options_for(key)[:sequence]))) 
-          elsif type
-            # if it's an Element we want the value (avoids recursive value)
-            value = (val.respond_to?(:value)) ? val.value : val
-            elements.update(key => type.new(value, options_for(key)))
           else
-            elements.update(key => Element(val, options_for(key)))
+            v = (val.respond_to?(:value) && val.value) ? val.value : val
+            elements.update(key => type.new(v, options_for(key)))
           end
         end
       end
@@ -53,7 +50,7 @@ module AcDc
       attrs = attributes.inject({}){|acc,attr| acc.update(attr[1].to_hash)}
       xml.tag!(tag_name,attrs){ |body|
         elements.sort{|a,b| a[1].sequence <=> b[1].sequence}.each do |key, elem|
-          body << elem.acdc
+          body << elem.acdc 
         end
       }
       xml.target!
@@ -90,15 +87,13 @@ module AcDc
       end
       
       # Declare an Element for this Body
-      # Sequence of elements (XML Schema sequence) is taken care of by the order
-      # the elements are declared in the class definition.
       #@param [Symbol] name A name to assign the Element (tag name)
       #@param [Class] type A type to use for the element (use this for type enforcement)
       #@option options [Boolean] :single False if object is a collection
       #@option options [String] :tag String determining the name to use in the XML tag
       def element(*options)
         name = options.first
-        type = options.second || nil unless options.second.is_a?(Hash)
+        type = options.second || Element unless options.second.is_a?(Hash)
         opts = options.extract_options!
         opts.merge!(:tag => name) if opts[:tag].nil?
         declared_elements.update(name => opts.merge(:type => type, :sequence => next_sequence))
@@ -149,8 +144,12 @@ module AcDc
         def instantiate(node)
           name = node.name
           attrs = node.attributes
-          klass = name.constantize
-          klass.new(value_from_node(node), :attributes => attrs)
+          begin
+            klass = name.constantize
+            klass.new(value_from_node(node), :attributes => attrs)
+          rescue
+            Element.new(value_from_node(node), :attributes => attrs, :tag => name.to_sym)
+          end
         end
         
         def next_sequence
@@ -162,13 +161,13 @@ module AcDc
     private
     
       def validate(type, key, val)
-        if type
+        if type && type != Element #Elements don't have type enforcement
           if val.respond_to?(:each)
             val.each {|v| raise ArgumentError.new("#{val.class} type is invalid. #{self.class} #{key} requires #{type}.") unless v.is_a?(type)}
           else
-             unless val.is_a?(type)
-                raise ArgumentError.new("#{val.class} type is invalid. #{self.class} #{key} requires #{type}.")
-              end
+            unless val.is_a?(type)
+              raise ArgumentError.new("#{val.class} type is invalid. #{self.class} #{key} requires #{type}.")
+            end
           end
         end
       end
