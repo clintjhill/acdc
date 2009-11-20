@@ -30,7 +30,8 @@ spec = Gem::Specification.new do |s|
      "lib/acdc/body.rb",
      "lib/acdc/element.rb",
      "lib/acdc/item.rb",
-     "lib/acdc/parse.rb"
+     "lib/acdc/parse.rb",
+     "lib/acdc/build.rb"
   ]
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

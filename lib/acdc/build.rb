@@ -14,10 +14,14 @@ module AcDc
         xml.tag!(self.class.tag_name,attrs){ |body|
           self.class.elements.each do |elem|
             value = send(elem.method_name.to_sym)
-            if elem.primitive?
-              body.tag! elem.method_name, value if value
+            if value
+              if elem.primitive?
+                body.tag! elem.method_name, value 
+              else
+                body << value.acdc(false)
+              end
             else
-              body << value.acdc(false) if value
+              body.tag! elem.method_name
             end
           end
         }

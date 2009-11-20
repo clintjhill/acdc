@@ -10,8 +10,8 @@ class Boolean; end
 
 module AcDc
   
-  DEFAULT_NAMESPACE = "example" unless defined?(AcDc::DEFAULT_NAMESPACE)
-  VERSION = [0,5,0] unless defined?(AcDc::VERSION)
+  DEFAULT_NAMESPACE = "acdc" unless defined?(AcDc::DEFAULT_NAMESPACE)
+  VERSION = [0,5,1] unless defined?(AcDc::VERSION)
   
   if defined?(JAIL_BREAK)
     puts "AcDc is live -- Dirty Deeds!"
@@ -25,7 +25,6 @@ module AcDc
   end
   
   module ClassMethods
-    
     def attributes
       @attributes[to_s] || []
     end
