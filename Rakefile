@@ -5,33 +5,22 @@ require 'spec/rake/spectask'
 require 'fileutils'
 require 'yard'
 include FileUtils
+require File.join(File.dirname(__FILE__),"lib","acdc")
 
 spec = Gem::Specification.new do |s|
   s.name = %q{acdc}
-  s.version = "0.5.1"
-
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.version = AcDc::VERSION.join('.')
   s.authors = ["Clint Hill"]
   s.date = %q{2009-09-19}
-  s.description = %q{This is a little xml-to-object-to-xml library that gets Dirty Deeds Done Dirt Cheap.}
   s.email = %q{clint.hill@h3osoftware.com}
-  s.files = [
-     "LICENSE",
-     "README",
-     "Rakefile",
-     "lib/acdc.rb",
-     "lib/acdc/attribute.rb",
-     "lib/acdc/body.rb",
-     "lib/acdc/element.rb",
-     "lib/acdc/item.rb",
-     "lib/acdc/parse.rb",
-     "lib/acdc/build.rb"
-  ]
   s.homepage = %q{http://github.com/clinth3o/acdc}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.4}
-  s.summary = %q{This is a little xml-to-object-to-xml library that gets Dirty Deeds Done Dirt Cheap.}
-
+  s.rubygems_version = %q{1.3.5}
+  s.summary = "acdc #{AcDc::VERSION.join('.')}"
+  s.description = %q{This is a little xml-to-object-to-xml library that gets Dirty Deeds Done Dirt Cheap.}
+  s.post_install_message = %q{For those about to rock ... we salute you!}
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.files = FileList['lib/**/*.rb','README','LICENSE']
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3

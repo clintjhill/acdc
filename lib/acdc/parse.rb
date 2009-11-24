@@ -50,10 +50,11 @@ module AcDc
       
       def constantize(type)
         if type.is_a?(String)
-          names = type.split('::')
           constant = Object
-          names.each do |name|
-            constant = const_defined?(name) ? const_get(name) : const_missing(name)
+          all_class_names.each do |name|
+            if name.downcase == type.downcase
+              constant = const_get(name)
+            end
           end
           constant
         else
@@ -62,4 +63,28 @@ module AcDc
       end
     
   end
+end
+
+class Module
+  
+  def hierarchy
+    name.split('::').inject([Object]) {|hierarchy,name|
+      hierarchy << hierarchy.last.const_get(name)
+    }
+  end
+  
+  def all_class_names
+    class_names = []
+    constants.each do |const|
+      constant = const_get(const)
+      case constant
+      when Class
+        class_names << constant.to_s.split('::',2)[1]
+      when Module
+        class_names += constant.all_class_names
+      end
+    end
+    class_names.uniq
+  end
+  
 end

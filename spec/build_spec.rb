@@ -2,19 +2,21 @@ require File.join(File.dirname(__FILE__),"spec_helper")
 
 module AcDcBuild
   class SubBuildTest
-    include AcDc
+    include AcDc::Mapping
+    include AcDc::Building
     namespace "notperfect.org"
     element :sub_first, String
   end
   class BuildTest
-    include AcDc
+    include AcDc::Mapping
+    include AcDc::Building
     element :first, String
     element :second, String
     element :third, SubBuildTest
   end
 end
 
-describe AcDc::Build do
+describe AcDc::Building do
   
   it "should render proper xml for class" do
     bt = AcDcBuild::BuildTest.new

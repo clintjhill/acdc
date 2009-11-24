@@ -9,45 +9,15 @@ class AcSequenced < AcDc::Body
 end
 
 describe "Body inherited features" do
-    
-  it "should set attributes to an array" do
-    AcInherited.attributes.should == []
-    AcInheritedTwice.attributes.should == []
+  
+  it "should inherit attribute" do
+    AcInherited.attribute(:test_attr_add, String)
+    AcInheritedTwice.attributes.first.method_name.should == AcInherited.attributes.first.method_name
   end
   
-  it "should set elements to an array" do
-    AcInherited.elements.should == []
-    AcInheritedTwice.elements.should == []
-  end
-  
-  it "should allow adding an attribute" do
-    lambda {
-      AcInherited.attribute(:name, String)
-    }.should change(AcInherited.attributes, :length)
-    AcInheritedTwice.attributes.should include(AcInherited.attributes.first)
-  end
-  
-  it "should allow adding an element" do
-    lambda {
-      AcInherited.element(:name, String)
-    }.should change(AcInherited.elements, :length)
-    AcInheritedTwice.elements.should include(AcInherited.elements.first)
-  end
-  
-  it "should default tag name to class" do
-    AcInherited.tag_name.should == 'acinherited'
-    AcInheritedTwice.tag_name.should == 'acinheritedtwice'
-  end
-  
-  it "should allow setting tag name" do
-    AcInherited.tag_name('changed')
-    AcInherited.tag_name.should == 'changed'
-    AcInheritedTwice.tag_name('changedtwice')
-    AcInheritedTwice.tag_name.should == 'changedtwice'
-  end
-  
-  it "should responsd to parse" do
-    AcInherited.should respond_to(:acdc)
+  it "should inherit element" do
+    AcInherited.element(:test_elem_add, String)
+    AcInheritedTwice.elements.first.method_name.should == AcInherited.elements.first.method_name
   end
   
 end
@@ -58,20 +28,17 @@ describe "Body Rendering features" do
     AcInherited.new.should respond_to(:acdc)
   end
   
-  it "should prevent confusion between same name attr/element" do
-    fail "not implemented"
-  end
-  
   it "should render appropriately" do
+    AcInherited.element(:name, String)
     ac1 = AcInherited.new
     ac1.name = "AcDc Renderererer"
-    ac1.acdc.should match(/<changed [\w\S\W]*><name>AcDc Renderererer<\/name><\/changed>/)
+    ac1.acdc.should match(/<acinherited [\w\S\W]*><name>AcDc Renderererer<\/name><\/acinherited>/)
   end
   
   it "should render inherited attrs/elems appropriately" do
     ac2 = AcInheritedTwice.new
     ac2.name = "Ac Dc Inherited"
-    ac2.acdc.should match(/<changedtwice [\w\S\W]*><name>Ac Dc Inherited<\/name><\/changedtwice>/)
+    ac2.acdc.should match(/<acinheritedtwice [\w\S\W]*><name>Ac Dc Inherited<\/name><\/acinheritedtwice>/)
     AcInherited.element(:new_one, String)
     ac2.acdc.should match(/<\/name><new_one\/>/)
   end

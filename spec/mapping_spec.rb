@@ -1,10 +1,8 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
 
-describe "AcDc include features" do
+class Ac; include AcDc::Mapping; end
   
-  before do
-    class Ac; include AcDc; end
-  end
+describe "Mapping features" do
   
   it "should set attributes to an array" do
     Ac.attributes.should == []
@@ -16,13 +14,13 @@ describe "AcDc include features" do
   
   it "should allow adding an attribute" do
     lambda {
-      Ac.attribute(:name, String)
+      Ac.attribute(:test_attr_add, String)
     }.should change(Ac, :attributes)
   end
   
   it "should allow adding an element" do
     lambda {
-      Ac.element(:name, String)
+      Ac.element(:test_elem_add, String)
     }.should change(Ac, :elements)
   end
   
@@ -35,8 +33,10 @@ describe "AcDc include features" do
     Ac.tag_name.should == 'changed'
   end
   
-  it "should respond to acdc for parsing" do
-    Ac.should respond_to(:acdc)
+  it "should prevent confusion between same name attr/element" do
+    Ac.attribute(:already_there, String)
+    Ac.element(:already_there, String)
+    Ac.new.should respond_to(:element_already_there)
   end
   
 end
