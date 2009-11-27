@@ -4,7 +4,8 @@ module AcDc
     def self.included(base)
       base.instance_variable_set("@attributes",{})
       base.instance_variable_set("@elements",{})
-      base.extend(ClassMethods)
+      base.extend ClassMethods
+      AcDc.parseable_constants << base
     end
 
     module ClassMethods

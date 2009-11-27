@@ -1,8 +1,7 @@
 module AcDc
   module Parsing
-    
+
     def acdc(xml, options={})
-      
       if xml.is_a?(XML::Node)
         node = xml
       else
@@ -12,20 +11,20 @@ module AcDc
           node = XML::Parser.string(xml).parse.root
         end
       end
-      
+      # This constantize is a global scope constantize.
+      # It will use AcDc#parseable_constants to detect which class
+      # is being parsed.
       klass = constantize(node.name)
-      
+      if klass.nil?
+        raise Exception.new("Uh Oh ... Live Wire! Couldn't parse #{node.name}.")
+      end
       root = node.name.downcase == klass.tag_name
-      
       namespace = node.namespaces.default
       namespace = "#{DEFAULT_NAMESPACE}:#{namespace}" if namespace
-      
       xpath = root ? '/' : './/'
       xpath += "#{DEFAULT_NAMESPACE}:" if namespace
       xpath += node.name
-      
       nodes = node.find(xpath, Array(namespace))
-      
       collection = nodes.collect do |n|
         obj = klass.new
         klass.attributes.each do |attr|
@@ -36,9 +35,7 @@ module AcDc
         end
         obj
       end
-      
       nodes = nil
-      
       if options[:single] || root
         collection.first
       else
@@ -46,45 +43,16 @@ module AcDc
       end
     end
     
-    private
-      
-      def constantize(type)
-        if type.is_a?(String)
-          constant = Object
-          all_class_names.each do |name|
-            if name.downcase == type.downcase
-              constant = const_get(name)
-            end
-          end
-          constant
-        else
-          type
-        end
-      end
-    
-  end
-end
-
-class Module
-  
-  def hierarchy
-    name.split('::').inject([Object]) {|hierarchy,name|
-      hierarchy << hierarchy.last.const_get(name)
-    }
-  end
-  
-  def all_class_names
-    class_names = []
-    constants.each do |const|
-      constant = const_get(const)
-      case constant
-      when Class
-        class_names << constant.to_s.split('::',2)[1]
-      when Module
-        class_names += constant.all_class_names
-      end
+  private
+    def constantize(type)
+      # I'm using a separate store for constants because of the fact at 
+      # runtime during parsing we will simply get a tag name to start with.
+      # It won't be in a form we could use to detect a constant normally.
+      # Also - this way provides a cleaner check for the tag_name feature.
+      AcDc.parseable_constants.detect{ |const|
+        const.name.downcase =~ /#{type.downcase}/ || const.tag_name == type
+      }
     end
-    class_names.uniq
+       
   end
-  
 end

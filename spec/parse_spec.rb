@@ -1,7 +1,6 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
 
 module AcDcSpec
-  extend AcDc::Parsing
   class ParseSpec
     include AcDc::Mapping
     namespace "http://schemas.xmlsoap.org/soap/envelope/"
@@ -17,15 +16,21 @@ end
 describe AcDc::Parsing do
   
   it "should parse non-special xml" do
-    node = AcDcSpec.acdc(xml_file("parse_spec.xml"))
+    node = acdc(xml_file("parse_spec.xml"))
     node.should be_instance_of(AcDcSpec::ParseSpec)
     node.html.should == 'yep'
     node.body.should == 'Value'
   end
   
-  it "should parse lower-case tagged xml" do
-    #node = AcDcSpec.acdc(xml_file("lower_case.xml"))
-    
+  it "should parse through tag_name" do
+    node = acdc(xml_file("lower_case.xml"))
+    node.should be_instance_of(AcDcSpec::LowerCase)
+  end
+  
+  it "should throw exception to unknown tags" do
+    lambda{
+      node = acdc("<?xml version='1.0' encoding='UTF-8'?><not><something/></not>")  
+    }.should raise_error(/Live Wire!/)
   end
   
 end

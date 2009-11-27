@@ -1,8 +1,8 @@
 module AcDc
   class Body
     
-    include(Mapping)
-    include(Building)
+    include Mapping
+    include Building
     
     def self.inherited(child)
       attrs = @attributes.nil? ? {} : @attributes.dup
@@ -11,6 +11,7 @@ module AcDc
       child.instance_variable_set("@elements", elems)
       @inheritance_chain ||= []
       @inheritance_chain << child
+      AcDc.parseable_constants << child
     end    
       
   end

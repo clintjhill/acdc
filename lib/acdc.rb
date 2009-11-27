@@ -10,19 +10,24 @@ class Boolean; end
 
 module AcDc
   
-  DEFAULT_NAMESPACE = "acdc" unless defined?(AcDc::DEFAULT_NAMESPACE)
-  VERSION = [0,6,0] unless defined?(AcDc::VERSION)
+  DEFAULT_NAMESPACE = "acdc"
+  VERSION = [0,7,0]
   
-  if defined?(JAIL_BREAK)
-    puts "AcDc is live -- Dirty Deeds!"
+  def self.parseable_constants
+    @parseables ||= []
   end
   
 end
 
-require File.join(File.dirname(__FILE__), 'acdc/mapping')
-require File.join(File.dirname(__FILE__), 'acdc/build')
-require File.join(File.dirname(__FILE__), 'acdc/parse')
-require File.join(File.dirname(__FILE__), 'acdc/item')
-require File.join(File.dirname(__FILE__), 'acdc/attribute')
-require File.join(File.dirname(__FILE__), 'acdc/element')
-require File.join(File.dirname(__FILE__), 'acdc/body')
+dir = File.dirname(__FILE__) 
+require File.join(dir, 'acdc/mapping')
+require File.join(dir, 'acdc/build')
+require File.join(dir, 'acdc/parse')
+require File.join(dir, 'acdc/item')
+require File.join(dir, 'acdc/attribute')
+require File.join(dir, 'acdc/element')
+require File.join(dir, 'acdc/body')
+
+class Object
+  include AcDc::Parsing
+end

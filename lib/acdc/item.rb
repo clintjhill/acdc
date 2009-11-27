@@ -68,10 +68,8 @@ module AcDc
         if options[:namespace] == false
           namespace = nil
         elsif options[:namespace]
-          # from an element definition
           namespace = "#{DEFAULT_NAMESPACE}:#{options[:namespace]}"
         elsif self.namespace
-          # this node has a custom namespace (that is present in the doc)
           namespace = "#{DEFAULT_NAMESPACE}:#{self.namespace}"
         end
         
