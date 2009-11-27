@@ -15,12 +15,12 @@ module AcDc
           value = send(elem.method_name.to_sym)
           if value
             if elem.primitive?
-              body.tag! elem.method_name, value 
+              body.tag! elem.tag, value 
             else
               body << value.acdc(false)
             end
           else
-            body.tag! elem.method_name
+            body.tag! elem.tag
           end
         end
       }
