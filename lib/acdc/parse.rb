@@ -1,7 +1,7 @@
 module AcDc
   module Parsing
 
-    def acdc(xml, options={})
+    def acdc(xml)
       if xml.is_a?(XML::Node)
         node = xml
       else
@@ -11,14 +11,13 @@ module AcDc
           node = XML::Parser.string(xml).parse.root
         end
       end
-      # This constantize is a global scope constantize.
-      # It will use AcDc#parseable_constants to detect which class
-      # is being parsed.
-      klass = constantize(node.name)
+      klass = AcDc.parseable_constants.detect{ |const|
+        const.name.downcase =~ /#{node.name.downcase}/ || const.tag_name == node.name
+      }
       if klass.nil?
         raise Exception.new("Uh Oh ... Live Wire! Couldn't parse #{node.name}.")
       end
-      root = node.name.downcase == klass.tag_name
+      root = node.name.downcase == klass.tag_name.downcase
       namespace = node.namespaces.default
       namespace = "#{DEFAULT_NAMESPACE}:#{namespace}" if namespace
       xpath = root ? '/' : './/'
@@ -36,22 +35,11 @@ module AcDc
         obj
       end
       nodes = nil
-      if options[:single] || root
+      if root
         collection.first
       else
         collection
       end
-    end
-    
-  private
-    def constantize(type)
-      # I'm using a separate store for constants because of the fact at 
-      # runtime during parsing we will simply get a tag name to start with.
-      # It won't be in a form we could use to detect a constant normally.
-      # Also - this way provides a cleaner check for the tag_name feature.
-      AcDc.parseable_constants.detect{ |const|
-        const.name.downcase =~ /#{type.downcase}/ || const.tag_name == type
-      }
     end
        
   end

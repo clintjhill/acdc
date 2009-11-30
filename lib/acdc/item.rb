@@ -7,7 +7,9 @@ module AcDc
     def initialize(name, type, options={})
       @name = name.to_s
       @type = type
-      @tag = options.delete(:tag) || name.to_s
+      @tag = options.delete(:tag) || 
+             @type.tag_name rescue nil ||
+             name.to_s
       @options = options
       @xml_type = self.class.to_s.split('::').last.downcase
     end
@@ -29,13 +31,16 @@ module AcDc
     end
     
     def value_from_xml(node, namespace)
-      if primitive?
-        find(node, namespace) do |n|
+      find(node,namespace) do |n|
+        if primitive?
           value = n.respond_to?(:content) ? n.content : n.to_s
           typecast(value)
+        else
+          # it is important to "detach" the node from the document
+          # by passing it in as a string. this forces the root xpath
+          # lookup to work properly.
+          constant.acdc(n.to_s)
         end
-      else
-        constant.parse(node, options)
       end
     end
     
@@ -72,14 +77,28 @@ module AcDc
         elsif self.namespace
           namespace = "#{DEFAULT_NAMESPACE}:#{self.namespace}"
         end
-        
         if element?
           if(options[:single].nil? || options[:single])
+            
             result = node.find_first(xpath(namespace), namespace)
+
+            if result.nil? and AcDc::parseable_constants.include?(@type)
+             # This makes sure it is found if in the event the Ruby type name
+             # doesn't match the Xml node name, but the type has a tag_name.
+             # Not sure why this would be good ---- edge case fix.
+             result = node.find_first(@type.tag_name, namespace)
+            end
+            
+            if result.nil? 
+             # This makes sure it is found in the event the Ruby method name
+             # doesn't match the Xml node name.
+             # Not sure why this would be good ---- edge case fix.
+             result = node.find_first(@type.to_s.split('::').last, namespace)
+            end
+          
           else
             result = node.find(xpath(namespace))
           end
-         
           if result
             if(options[:single].nil? || options[:single])
               value = yield(result)
@@ -87,18 +106,6 @@ module AcDc
               value = []
               result.each do |res|
                 value << yield(res)
-              end
-            end
-            if options[:attributes].is_a?(Hash)
-              result.attributes.each do |xml_attribute|
-                if attribute_options = options[:attributes][xml_attribute.name.to_sym]
-                  attribute_value = Attribute.new(xml_attribute.name.to_sym, *attribute_options).from_xml_node(result, namespace)
-                  result.instance_eval <<-EOV
-                    def value.#{xml_attribute.name}
-                      #{attribute_value.inspect}
-                    end
-                  EOV
-                end
               end
             end
             value

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Namespaced xmlns="http://example.org">
+	<XMLLowerCased>
+		<first>Third Lower Case Test</first>
+		<Header>Tested!</Header>
+	</XMLLowerCased>
+</Namespaced>
