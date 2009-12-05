@@ -49,7 +49,7 @@ module AcDc
       
       private
         def make_accessor(item)
-          safe_name = item.name.tr('-','_')
+          safe_name = item.name.tr('-','_') 
           if instance_methods.include?(safe_name)
             name = "#{item.element? ? "element_" : "attribute_"}#{safe_name}"
             item.name = name
