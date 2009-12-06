@@ -41,8 +41,8 @@ marshaling those objects from XML a breeze.
 
 I want to thank John Nunemaker for his HappyMapper gem. I stole quite a bit
 of code from that gem.
-http://railstips.org/2008/11/17/happymapper-making-xml-fun-again
-http://github.com/jnunemaker/happymapper/
+* http://railstips.org/2008/11/17/happymapper-making-xml-fun-again
+* http://github.com/jnunemaker/happymapper/
 
 And if you might ask why not just use his library? Well - that's the acdc part
 of this story. He had the AC - I added the DC.
