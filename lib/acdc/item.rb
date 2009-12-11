@@ -7,11 +7,17 @@ module AcDc
     def initialize(name, type, options={})
       @name = name.to_s
       @type = type
+      @renderable = options.delete(:render_empty)
+      @renderable = true if @renderable.nil?
       @tag = options.delete(:tag) || 
              @type.tag_name rescue nil ||
              name.to_s
       @options = options
       @xml_type = self.class.to_s.split('::').last.downcase
+    end
+    
+    def renderable?
+      @renderable
     end
     
     def method_name

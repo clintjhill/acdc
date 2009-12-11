@@ -12,7 +12,6 @@ spec = Gem::Specification.new do |s|
   s.name = %q{acdc}
   s.version = AcDc::VERSION.join('.')
   s.authors = ["Clint Hill"]
-  s.date = %q{2009-09-19}
   s.email = %q{clint.hill@h3osoftware.com}
   s.homepage = %q{http://h3osoftware.com/acdc}
   s.require_paths = ["lib"]

@@ -20,7 +20,7 @@ module AcDc
               body << value.acdc(false)
             end
           else
-            body.tag! elem.tag
+            body.tag! elem.tag if elem.renderable?
           end
         end
       }
