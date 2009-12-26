@@ -99,17 +99,17 @@ parameter. Here is an example:
 The final example is the Dc part - Xml to Object. The following example uses the Street and Address
 classes above and the #acdc method to derive the objects from the XML string.
 
-addy = acdc <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<address type="">
-<street><line_1>1234 Somewhere</line_1></street>
-<street><line_1>5678 Somwhere Else</line_1></street>
-</address>
-EOF
-
-puts addy.inspect
-#<Address:0x3342f8 @type="", @streets=[#<Street:0x32abb8 @line_1="1234 Somewhere">, #<Street:0x329290 @line_1="5678 Somwhere Else">]>
-
+  addy = acdc <<EOF
+  <?xml version="1.0" encoding="UTF-8"?>
+  <address type="">
+  <street><line_1>1234 Somewhere</line_1></street>
+  <street><line_1>5678 Somwhere Else</line_1></street>
+  </address>
+  EOF
+  
+  puts addy.inspect
+  #<Address:0x3342f8 @type="", @streets=[#<Street:0x32abb8 @line_1="1234 Somewhere">, #<Street:0x329290 @line_1="5678 Somwhere Else">]>
+  
 == Contact
 
 - Author:: Clint Hill clint.hill@h3osoftware.com
