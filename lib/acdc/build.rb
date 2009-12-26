@@ -6,7 +6,7 @@ module AcDc
     def acdc(root = true)
       xml = Builder::XmlMarkup.new
       attrs = self.class.attributes.inject({}){ |acc,attr| 
-        acc.update(attr.method_name => send(attr.method_name.to_sym))
+        acc.update(attr.tag => send(attr.method_name.to_sym))
       }
       attrs.update(:xmlns => self.class.namespace) if self.class.namespace
       xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8" if root
@@ -14,10 +14,20 @@ module AcDc
         self.class.elements.each do |elem|
           value = send(elem.method_name.to_sym)
           if value
-            if elem.primitive?
-              body.tag! elem.tag, value 
+            if elem.single?
+              if elem.primitive?
+                body.tag! elem.tag, value 
+              else
+                body << value.acdc(false)
+              end
             else
-              body << value.acdc(false)
+              value.each { |v|
+                if v.kind_of?(AcDc::Body)
+                  body << v.acdc(false)
+                else
+                  body.tag! elem.tag, v
+                end
+              }
             end
           else
             body.tag! elem.tag if elem.renderable?

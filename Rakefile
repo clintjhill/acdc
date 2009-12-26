@@ -3,7 +3,7 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
 require 'fileutils'
-gem 'yard', '= 0.2.3.5'
+gem 'yard'
 require 'yard'
 include FileUtils
 require File.join(File.dirname(__FILE__),"lib","acdc")
@@ -60,7 +60,7 @@ end
 ##############################################################################
 # Documentation
 ##############################################################################
-task :doc => ["doc:yardoc"]
+task :doc => ["doc:yard"]
 namespace :doc do
   YARD::Rake::YardocTask.new do |t|
     t.options = ['-odoc/yardoc', '-rREADME'] # optional

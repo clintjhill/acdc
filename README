@@ -17,19 +17,84 @@ This is a little XML-to-object-to-XML library that gets Dirty Deeds Done Dirt Ch
 AcDc::Body assists you with declaring XML objects with ease. And #acdc makes
 marshaling those objects from XML a breeze.
 
+==== Simple Data Model 
+
+This example will go over a simple Address data model and all of the ways you could use it.
+
+  require 'rubygems'
   require 'acdc'
-  class TheJack < AcDc::Body
-    attribute :shes_got, String
-    element :big_balls, String
+
+  class Address < AcDc::Body
+	attribute :type, String, :tag => "Type"
   end
 
-  jack = acdc("<thejack shes_got='big-balls'><big_balls>I've got big balls</big_balls></thejack>")
-  puts jack.shes_got
-  => "big-balls"
-  puts jack.big_balls
-  => "I've got big balls"
-  puts jack.acdc
-  => "<?xml version='1.0' encoding='UTF-8'?><thejack shes_got='big-balls'><big_balls>I've got big balls</big_balls></thejack>"
+  puts Address.new.acdc
+  #=> <?xml version="1.0" encoding="UTF-8"?><address Type=""></address>
+
+First thing to point out is the #attribute class method that allows you to specify
+the name of the method (:type) the type of the data (String) and the XML tag ("Type").
+
+You can also do this with #element. 
+
+  class Address < AcDc::Body
+	attribute :type, String, :tag => "Type"
+	element :street, String, :tag => "Street"
+  end
+
+  puts Address.new.acdc
+  #=> <?xml version="1.0" encoding="UTF-8"?><address Type=""><Street/></address>
+
+The :tag parameter is optional. The reason it's demonstrated here is simply to capitalize
+the attribute/element tag. You could :tag any element/attribute with another name for rendering.
+By default AcDc will output XML in lowercase. 
+
+  class Address < AcDc::Body
+    attribute :type, String
+    element :street, String
+  end
+
+  puts Address.new.acdc
+  #=> <?xml version="1.0" encoding="UTF-8"?><address type=""><street/></address>
+
+You could also specify a custom type for the second parameter. In the following example the
+Street element will be created as a custom type.
+
+  class Street < AcDc::Body
+	element :line_1, String
+  end
+
+  class Address < AcDc::Body
+    attribute :type, String
+    element :street, Street
+  end
+
+  add = Address.new
+  add.street = Street.new
+  add.street.line_1 = "1234 Somewhere"
+
+  puts add.acdc
+  #=> <?xml version="1.0" encoding="UTF-8"?><address type=""><street><line_1>1234 Somewhere</line_1></street></address>
+
+AcDc will also recognize collections of elements. You can do this with the :single
+parameter. Here is an example:
+
+  class Street < AcDc::Body
+     element :line_1, String
+  end
+  
+  class Address < AcDc::Body
+    attribute :type, String
+    element :streets, Street, :single => false
+  end
+
+  add = Address.new
+  street1 = Street.new
+  street2 = Street.new
+  street1.line_1 = "1234 Somewhere"
+  street2.line_1 = "5678 Somwhere Else"
+  add.streets = [street1,street2]
+  puts add.acdc
+  #=> <?xml version="1.0" encoding="UTF-8"?><address type=""><street><line_1>1234 Somewhere</line_1></street><street><line_1>5678 Somwhere Else</line_1></street></address>
 
 == Contact
 

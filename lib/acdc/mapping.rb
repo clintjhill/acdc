@@ -49,13 +49,10 @@ module AcDc
       
       private
         def make_accessor(item)
-          safe_name = item.name.tr('-','_') 
-          # I find this to be brittle because of other libraries ability
-          # to add methods the way we do. Leaving for now - however
-          # there has to be a better way to isolate the method name 
-          # from our own @elements/@attributes 
-          if instance_methods.include?(safe_name)
-            name = "#{item.element? ? "element_" : "attribute_"}#{safe_name}"
+          in_elems = elements.find{|e| e.name == item.name and e != item}
+          in_attrs = attributes.find{|a| a.name == item.name and a != item}
+          if in_elems or in_attrs
+            name = "#{item.element? ? "element_" : "attribute_"}#{item.name}"
             item.name = name
           end
           attr_accessor item.method_name.intern

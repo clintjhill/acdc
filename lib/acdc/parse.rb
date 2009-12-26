@@ -11,7 +11,7 @@ module AcDc
           node = XML::Parser.string(xml).parse.root
         end
       end
-      klass = AcDc.parseable_constants.detect{ |const|
+      klass = AcDc.parseable_constants.find{ |const|
         const.name.downcase =~ /#{node.name.downcase}/ || const.tag_name == node.name
       }
       if klass.nil?

@@ -28,6 +28,10 @@ module AcDc
       @constant ||= constantize(type)
     end
     
+    def single?
+      options[:single].nil? || options[:single]
+    end
+    
     def element?
       @xml_type == 'element'
     end
@@ -84,7 +88,7 @@ module AcDc
           namespace = "#{DEFAULT_NAMESPACE}:#{self.namespace}"
         end
         if element?
-          if(options[:single].nil? || options[:single])
+          if(single?)
             
             result = node.find_first(xpath(namespace), namespace)
 
@@ -106,7 +110,7 @@ module AcDc
             result = node.find(xpath(namespace))
           end
           if result
-            if(options[:single].nil? || options[:single])
+            if(single?)
               value = yield(result)
             else
               value = []

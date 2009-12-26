@@ -39,4 +39,19 @@ describe AcDc::Building do
     xml.should match(/<subbuildtest\s*\/>/)
   end
   
+  it "should render collection (native type)" do
+    class AcNative < AcDc::Body; element :native, String, :single => false; end;
+    nat = AcNative.new
+    nat.native = ["Test 1", "Test 2"]
+    nat.acdc.should match(/Test 1<\/native><native>Test 2/)
+  end
+  
+  it "should render collection (custom type)" do
+    class AcCustom < AcDc::Body; element :child, String; end;
+    class AcCustomHolder < AcDc::Body; element :children, AcCustom, :single => false; end;
+    ach = AcCustomHolder.new
+    ach.children = [AcCustom.new, AcCustom.new]
+    ach.acdc.should match(/<accustom><child\/><\/accustom><accustom><child\/><\/accustom>/)
+  end
+  
 end

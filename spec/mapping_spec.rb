@@ -39,4 +39,11 @@ describe "Mapping features" do
     Ac.new.should respond_to(:element_already_there)
   end
   
+  it "should allow mapping of collections" do
+    Ac.element(:coll, String, :single => false)
+    ac = Ac.new
+    ac.coll = ["test 1","test 2"]
+    ac.coll.should be_instance_of(Array)
+  end
+  
 end
