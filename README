@@ -25,7 +25,7 @@ This example will go over a simple Address data model and all of the ways you co
   require 'acdc'
 
   class Address < AcDc::Body
-	attribute :type, String, :tag => "Type"
+    attribute :type, String, :tag => "Type"
   end
 
   puts Address.new.acdc
@@ -37,8 +37,8 @@ the name of the method (:type) the type of the data (String) and the XML tag ("T
 You can also do this with #element. 
 
   class Address < AcDc::Body
-	attribute :type, String, :tag => "Type"
-	element :street, String, :tag => "Street"
+    attribute :type, String, :tag => "Type"
+    element :street, String, :tag => "Street"
   end
 
   puts Address.new.acdc
@@ -60,7 +60,7 @@ You could also specify a custom type for the second parameter. In the following 
 Street element will be created as a custom type.
 
   class Street < AcDc::Body
-	element :line_1, String
+    element :line_1, String
   end
 
   class Address < AcDc::Body
@@ -95,6 +95,20 @@ parameter. Here is an example:
   add.streets = [street1,street2]
   puts add.acdc
   #=> <?xml version="1.0" encoding="UTF-8"?><address type=""><street><line_1>1234 Somewhere</line_1></street><street><line_1>5678 Somwhere Else</line_1></street></address>
+
+The final example is the Dc part - Xml to Object. The following example uses the Street and Address
+classes above and the #acdc method to derive the objects from the XML string.
+
+addy = acdc <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<address type="">
+<street><line_1>1234 Somewhere</line_1></street>
+<street><line_1>5678 Somwhere Else</line_1></street>
+</address>
+EOF
+
+puts addy.inspect
+#<Address:0x3342f8 @type="", @streets=[#<Street:0x32abb8 @line_1="1234 Somewhere">, #<Street:0x329290 @line_1="5678 Somwhere Else">]>
 
 == Contact
 
