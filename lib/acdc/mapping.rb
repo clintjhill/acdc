@@ -45,18 +45,17 @@ module AcDc
       def namespace(namespace = nil)
         @namespace = namespace if namespace
         @namespace
-      end
-      
-      private
-        def make_accessor(item)
-          in_elems = elements.find{|e| e.name == item.name and e != item}
-          in_attrs = attributes.find{|a| a.name == item.name and a != item}
-          if in_elems or in_attrs
-            name = "#{item.element? ? "element_" : "attribute_"}#{item.name}"
-            item.name = name
-          end
-          attr_accessor item.method_name.intern
+      end   
+    
+      def make_accessor(item)
+        in_elems = elements.find{|e| e.name == item.name and e != item}
+        in_attrs = attributes.find{|a| a.name == item.name and a != item}
+        if in_elems or in_attrs
+          name = "#{item.element? ? "element_" : "attribute_"}#{item.name}"
+          item.name = name
         end
+        attr_accessor item.method_name.intern
+      end
 
     end
     

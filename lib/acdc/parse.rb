@@ -2,6 +2,8 @@ module AcDc
   module Parsing
 
     def acdc(xml)
+      return nil if xml.nil?
+      
       if xml.is_a?(XML::Node)
         node = xml
       else
@@ -11,35 +13,33 @@ module AcDc
           node = XML::Parser.string(xml).parse.root
         end
       end
+    
       klass = AcDc.parseable_constants.find{ |const|
         const.name.downcase =~ /#{node.name.downcase}/ || const.tag_name == node.name
       }
+      
       if klass.nil?
         raise Exception.new("Uh Oh ... Live Wire! Couldn't parse #{node.name}.")
       end
-      root = node.name.downcase == klass.tag_name.downcase
+ 
       namespace = node.namespaces.default
       namespace = "#{DEFAULT_NAMESPACE}:#{namespace}" if namespace
-      xpath = root ? '/' : './/'
-      xpath += "#{DEFAULT_NAMESPACE}:" if namespace
-      xpath += node.name
-      nodes = node.find(xpath, Array(namespace))
-      collection = nodes.collect do |n|
-        obj = klass.new
-        klass.attributes.each do |attr|
-          obj.send("#{attr.method_name}=", attr.value_from_xml(n, namespace))
-        end
+
+      obj = klass.new
+      
+      klass.attributes.each do |attr|
+        obj.send("#{attr.method_name}=", attr.value_from_xml(node, namespace))
+      end
+      
+      if klass.elements.size > 0
         klass.elements.each do |elem|
-          obj.send("#{elem.method_name}=", elem.value_from_xml(n, namespace))
+          obj.send("#{elem.method_name}=", elem.value_from_xml(node, namespace))
         end
-        obj
-      end
-      nodes = nil
-      if root
-        collection.first
       else
-        collection
+        obj.value = node.respond_to?(:content) ? node.content : node.to_s
       end
+      
+      obj  
     end
        
   end

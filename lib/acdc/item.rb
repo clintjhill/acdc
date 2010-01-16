@@ -29,7 +29,7 @@ module AcDc
     end
     
     def single?
-      options[:single].nil? || options[:single]
+      @single ||= options[:single].nil? || options[:single]
     end
     
     def element?
@@ -41,16 +41,12 @@ module AcDc
     end
     
     def value_from_xml(node, namespace)
-      find(node,namespace) do |n|
-        if primitive?
-          value = n.respond_to?(:content) ? n.content : n.to_s
-          typecast(value)
-        else
-          # it is important to "detach" the node from the document
-          # by passing it in as a string. this forces the root xpath
-          # lookup to work properly.
-          constant.acdc(n.to_s)
-        end
+      n = find(node,namespace)
+      if primitive?
+        value = n.respond_to?(:content) ? n.content : n.to_s
+        typecast(value)
+      else
+        constant.acdc(n)
       end
     end
     
@@ -79,51 +75,15 @@ module AcDc
         end
       end
       
-      def find(node, namespace, &block)
-        if options[:namespace] == false
-          namespace = nil
-        elsif options[:namespace]
-          namespace = "#{DEFAULT_NAMESPACE}:#{options[:namespace]}"
-        elsif self.namespace
-          namespace = "#{DEFAULT_NAMESPACE}:#{self.namespace}"
-        end
+      def find(node, namespace)
         if element?
-          if(single?)
-            
-            result = node.find_first(xpath(namespace), namespace)
-
-            if result.nil? and AcDc::parseable_constants.include?(@type)
-             # This makes sure it is found if in the event the Ruby type name
-             # doesn't match the Xml node name, but the type has a tag_name.
-             # Not sure why this would be good ---- edge case fix.
-             result = node.find_first(@type.tag_name, namespace)
-            end
-            
-            if result.nil? 
-             # This makes sure it is found in the event the Ruby method name
-             # doesn't match the Xml node name.
-             # Not sure why this would be good ---- edge case fix.
-             result = node.find_first(@type.to_s.split('::').last, namespace)
-            end
-          
-          else
-            result = node.find(xpath(namespace))
+          result = single? ? node.find_first(xpath(namespace), namespace) : node.find(xpath(namespace))
+          unless result.nil?
+            value = single? ? result : result.each { |res| (value ||= []) << res } 
           end
-          if result
-            if(single?)
-              value = yield(result)
-            else
-              value = []
-              result.each do |res|
-                value << yield(res)
-              end
-            end
-            value
-          else
-            nil
-          end
+          value
         else
-          yield(node[tag])
+          node[tag]
         end
       end
       

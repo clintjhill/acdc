@@ -8,6 +8,7 @@ module AcDcSpec
     element :body, String
   end
   class Header < AcDc::Body
+    tag_name "Header"
     element :token, String
   end
   class LowerCase < AcDc::Body
@@ -36,6 +37,9 @@ describe AcDc::Parsing do
   it "should parse through tag_name" do
     node = acdc(xml_file("lower_case.xml"))
     node.should be_instance_of(AcDcSpec::LowerCase)
+    node.first.should be_instance_of(String)
+    node.first.should == 'First Lower Case Test'
+    node.head.should be_nil
   end
   
   it "should parse nested Element/Body tags" do
@@ -58,4 +62,11 @@ describe AcDc::Parsing do
     }.should raise_error(/Live Wire!/)
   end
   
+  it "should provide a value for no-element bodies" do
+    class Email < AcDc::Body; attribute :type, String; end
+    xml = "<email type=\"personal\">me@here.com</email>"
+    email = acdc(xml)
+    email.type.should == "personal"
+    email.value.should == "me@here.com"
+  end
 end

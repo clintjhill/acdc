@@ -1,6 +1,8 @@
 module AcDc
   class Body
     
+    attr_accessor :value
+    
     include Mapping
     include Building
     
