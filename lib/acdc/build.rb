@@ -16,7 +16,9 @@ module AcDc
           if value
             if elem.single?
               if elem.primitive?
-                body.tag! elem.tag, value 
+                unless value.is_a?(String) and value.empty? and !elem.renderable?
+                  body.tag! elem.tag, value 
+                end
               else
                 body << value.acdc(false)
               end
@@ -32,6 +34,9 @@ module AcDc
           else
             body.tag! elem.tag if elem.renderable?
           end
+        end
+        if is_a?(AcDc::Body) and value 
+          body << value
         end
       }
       xml.target!

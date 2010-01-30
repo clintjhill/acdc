@@ -11,7 +11,7 @@ class Boolean; end
 module AcDc
   
   DEFAULT_NAMESPACE = "acdc"
-  VERSION = [0,7,5]
+  VERSION = [0,7,6]
   
   def self.parseable_constants
     @parseables ||= []

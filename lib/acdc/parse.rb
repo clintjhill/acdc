@@ -35,11 +35,14 @@ module AcDc
         klass.elements.each do |elem|
           obj.send("#{elem.method_name}=", elem.value_from_xml(node, namespace))
         end
-      else
-        obj.value = node.respond_to?(:content) ? node.content : node.to_s
       end
       
-      obj  
+      if obj.is_a?(AcDc::Body) 
+        obj.value = node.respond_to?(:content) ? node.content : node.to_s
+      end  
+          
+      obj 
+       
     end
        
   end

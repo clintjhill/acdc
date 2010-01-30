@@ -54,4 +54,28 @@ describe AcDc::Building do
     ach.acdc.should match(/<accustom><child\/><\/accustom><accustom><child\/><\/accustom>/)
   end
   
+  class AlertMessage < AcDc::Body
+    tag_name 'AlertMessage'
+    attribute :type,    String, :tag => 'Type', :render_empty => false
+    element   :message, String, :tag => 'Message', :render_empty => false
+    element   :message2, String, :tag => 'Message2', :render_empty => false
+  end
+  
+  it "should not render empty elements from acdc'd xml if marked render_empty" do
+    message = '<AlertMessage Type="Legal"></AlertMessage>'
+    am = AlertMessage.acdc message
+    am.acdc.should_not match(/<Message><\/Message>/)
+    am.acdc.should_not match(/<Message2><\/Message2/)
+  end
+  
+  class ValueBody < AcDc::Body
+    tag_name 'ValueMessage'
+    attribute :type,    String, :tag => 'Type'
+  end
+  it "should render value of element/body if available" do
+    message = '<ValueMessage Type="Legal">Your going to Jail.</ValueMessage>'
+    am = ValueBody.acdc message
+    am.acdc.should match(/>Your going to Jail.<\//)
+  end
+  
 end
