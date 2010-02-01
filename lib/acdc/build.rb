@@ -35,7 +35,7 @@ module AcDc
             body.tag! elem.tag if elem.renderable?
           end
         end
-        if is_a?(AcDc::Body) and value 
+        if self.class.elements.empty? and is_a?(AcDc::Body) and value 
           body << value
         end
       }

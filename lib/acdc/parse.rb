@@ -37,7 +37,7 @@ module AcDc
         end
       end
       
-      if obj.is_a?(AcDc::Body) 
+      if obj.is_a?(AcDc::Body) && klass.elements.size <= 0
         obj.value = node.respond_to?(:content) ? node.content : node.to_s
       end  
           
